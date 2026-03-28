@@ -1,34 +1,37 @@
+import os
 import torch
 import torch.nn as nn
 from model.embeddings import get_embedding
 
-def train(mac, sequences, tokenizer, epochs=50, lr=0.0003, device='cuda'):
+def train(mac, sequences, tokenizer, epochs=50, lr=0.0003, device='mps', save_dir='checkpoints'):
     embed = get_embedding(tokenizer.vocab_size).to(device)
     mac = mac.to(device)
 
     optimizer = torch.optim.Adam(
-        list(mac.parameters()) + list(embed.parameters()), 
+        list(mac.parameters()) + list(embed.parameters()),
         lr=lr
     )
+    
+    # Learning rate scheduler — reduces lr when loss plateaus
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode='min', factor=0.5, patience=5
+    )
+        
     criterion = nn.CrossEntropyLoss()
 
     print(f"\nTraining MAC on {len(sequences)} sequences for {epochs} epochs...\n")
 
+    best_loss = float('inf')
+    
     for epoch in range(epochs):
         total_loss = 0
 
         for token_ids in sequences:
             seq_vecs = embed(torch.tensor(token_ids).to(device))
-
             logits, _ = mac(seq_vecs)
 
-            loss = 0
-            for i in range(len(token_ids) - 1):
-                pred_logits = logits[i]
-                target_id = torch.tensor([token_ids[i + 1]]).to(device)
-                loss += criterion(pred_logits.unsqueeze(0), target_id)
-
-            loss = loss / (len(token_ids) - 1)
+            targets = torch.tensor(token_ids[1:]).to(device)
+            loss = criterion(logits[:-1], targets)
 
             optimizer.zero_grad()
             loss.backward()
@@ -37,7 +40,35 @@ def train(mac, sequences, tokenizer, epochs=50, lr=0.0003, device='cuda'):
 
             total_loss += loss.item()
 
-        print(f"Epoch {epoch}: Loss = {total_loss:.2f}")
+        avg_loss = total_loss / len(sequences)
+        print(f"Epoch {epoch}: Loss = {avg_loss:.4f}")
+        
+        # Step scheduler
+        scheduler.step(avg_loss)
+        
+        # Save best model
+        if avg_loss < best_loss:
+            best_loss = avg_loss
+            os.makedirs(save_dir, exist_ok=True)
+            torch.save({
+                'epoch': epoch,
+                'mac_state_dict': mac.state_dict(),
+                'embed_state_dict': embed.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'loss': best_loss,
+            }, f'{save_dir}/mac_best.pt')
+            print(f"  ✓ Best model saved (loss={best_loss:.4f})")
 
-    print("\nTraining complete!")
+    # Save final model
+    torch.save({
+        'epoch': epochs,
+        'mac_state_dict': mac.state_dict(),
+        'embed_state_dict': embed.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'loss': avg_loss,
+    }, f'{save_dir}/mac_final.pt')
+    
+    print(f"\nTraining complete! Best loss: {best_loss:.4f}")
+    print(f"Models saved to {save_dir}/")
+    
     return mac, embed

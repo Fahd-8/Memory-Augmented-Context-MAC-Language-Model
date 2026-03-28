@@ -1,1 +1,1 @@
-from inference.generate import generate_next_word, run_tests
+from inference.generate import generate_text, run_tests

@@ -11,7 +11,7 @@ class MAC_Layer(nn.Module):
         self.output_proj = nn.Linear(dim, vocab_size) if vocab_size else None
 
     def forward(self, tokens):
-        memory_vecs = torch.stack([self.lmm(tok) for tok in tokens])
+        memory_vecs = self.lmm(tokens)
         combined = torch.cat([tokens, memory_vecs], dim=0)
         output, weights = self.attention(combined)
         hidden = output[:len(tokens)]
