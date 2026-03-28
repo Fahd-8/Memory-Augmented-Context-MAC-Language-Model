@@ -35,7 +35,9 @@ def train(mac, sequences, tokenizer, epochs=50, lr=0.0003, device='mps', save_di
 
             optimizer.zero_grad()
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(mac.parameters(), 1.0)
+            torch.nn.utils.clip_grad_norm_(
+                list(mac.parameters()) + list(embed.parameters()), 1.0
+            )
             optimizer.step()
 
             total_loss += loss.item()
