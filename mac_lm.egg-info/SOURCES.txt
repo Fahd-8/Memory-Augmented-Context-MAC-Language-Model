@@ -1,0 +1,17 @@
+README.md
+setup.py
+data/__init__.py
+data/dataset.py
+inference/__init__.py
+inference/generate.py
+mac_lm.egg-info/PKG-INFO
+mac_lm.egg-info/SOURCES.txt
+mac_lm.egg-info/dependency_links.txt
+mac_lm.egg-info/top_level.txt
+model/__init__.py
+model/attention.py
+model/embeddings.py
+model/lmm.py
+model/mac_layer.py
+training/__init__.py
+training/train.py
