@@ -27,6 +27,7 @@ def train(mac, sequences, tokenizer, epochs=50, lr=0.0003, device='mps', save_di
         total_loss = 0
 
         for token_ids in sequences:
+            mac.reset_memory() 
             seq_vecs = embed(torch.tensor(token_ids).to(device))
             logits, _ = mac(seq_vecs)
 

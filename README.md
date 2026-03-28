@@ -176,15 +176,31 @@ Potential improvements include:
 
 ## Performance
 
-Sample generations from trained model:
+### Training Progress
+| Phase | Changes | Best Loss |
+|-------|---------|-----------|
+| Baseline | No causal mask, no positional encoding | 1.48 |
+| Phase 1 | Causal masking + positional encodings | 0.58 |
 
-| Prompt | Generated Next Word |
-|--------|-------------------|
-| "Once upon a time" | "there" |
-| "The little girl" | "alert" |
-| "The boy wanted to" | "away" |
+### Sample Generations (Phase 1 Model)
 
-Results show the model learned common story patterns, though quality varies with prompt complexity.
+| Prompt | Generated Text |
+|--------|---------------|
+| "Once upon a time" | "Once upon a time, there was a little boy named Joe. He had 8 small legs exploring in the hill outside..." |
+| "The little girl" | "The little girl was very fast that she, and promised to the warrior quickly..." |
+| "One day there was" | "One day there was sitting on the grass in a girl named Susie. She wanted to run..." |
+| "The boy wanted to" | "The boy wanted to its rightful warrior the kitty was so he ran for a..." |
+
+### Observations
+- Model learned character names (Joe, Susie, Lily, Cindy, Jim)
+- Model learned story structure (One day... Then... But...)
+- Model learned dialogue patterns ("I don't want...", "That's wonderful...")
+- Grammar still inconsistent — expected with 100 training stories
+- Coherence improves significantly after Phase 1 fixes
+
+### Next: Phase 2 (TTT)
+Test-Time Training will allow memory weights to adapt during inference,
+enabling the model to maintain coherent narrative throughout generation.
 
 ## References
 
