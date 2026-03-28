@@ -1,0 +1,27 @@
+# Virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Model weights
+*.pt
+*.pth
+*.bin
+
+# Dataset cache
+.cache/
+~/.cache/huggingface/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
