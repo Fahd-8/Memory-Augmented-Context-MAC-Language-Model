@@ -21,7 +21,6 @@ class LMM(nn.Module):
             nn.Linear(1024, dim)
         )
 
-        self.hidden_state = None
         self.momentum_buffer = None
         self.ttt_optimizer = None
 
@@ -51,16 +50,11 @@ class LMM(nn.Module):
         return self.momentum_buffer
 
     def forward(self, x, do_ttt=False):
-        if self.hidden_state is None:
-            self.hidden_state = torch.zeros(self.dim, device=x.device)
-
-        x_with_memory = x + self.hidden_state.unsqueeze(0)
-
         if do_ttt:
             self.net.train()
             opt = self._get_optimizer()
 
-            for token in x_with_memory:
+            for token in x:
                 token = token.unsqueeze(0).detach()
 
                 # step 1 — surprise via gradient norm
@@ -99,12 +93,17 @@ class LMM(nn.Module):
             self.net.eval()
 
         with torch.no_grad():
-            out = self.net(x_with_memory)
+            out = self.net(x)
 
-        self.hidden_state = out[-1].detach()
-        return out
+        # compress entire sequence into single memory summary vector
+        memory_summary = out.mean(dim=0, keepdim=True)  # shape [1, dim]
+        return memory_summary
 
-    def reset_state(self):
-        self.hidden_state = None
+    def reset_memory_state(self):
+        # call between sequences — only resets momentum
+        self.momentum_buffer = None
+
+    def reset_ttt(self):
+        # call between epochs — full reset including optimizer
         self.momentum_buffer = None
         self.ttt_optimizer = None

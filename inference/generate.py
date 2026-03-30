@@ -18,7 +18,9 @@ def load_model(checkpoint_path='checkpoints/mac_best.pt', device='mps'):
 
 def generate_text(prompt, mac, embed, tokenizer, device='mps', max_new_tokens=50, temperature=0.9, top_p=0.9, repetition_penalty=1.3, do_ttt=True):
     mac.eval()
+    mac.reset_ttt()    # fresh TTT state for new prompt
     mac.reset_memory()
+
     token_ids = tokenizer.encode(prompt)
     generated = list(token_ids)
 
@@ -27,11 +29,11 @@ def generate_text(prompt, mac, embed, tokenizer, device='mps', max_new_tokens=50
         logits, _ = mac(seq_vecs, do_ttt=do_ttt)
         next_logits = logits[-1] / temperature
 
-        # Repetition penalty
+        # repetition penalty
         for token_id in set(generated):
             next_logits[token_id] /= repetition_penalty
 
-        # Top-p sampling
+        # top-p sampling
         sorted_logits, sorted_indices = torch.sort(next_logits, descending=True)
         cumulative_probs = torch.cumsum(F.softmax(sorted_logits, dim=-1), dim=-1)
         sorted_indices_to_remove = cumulative_probs > top_p
