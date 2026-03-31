@@ -1,6 +1,9 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import torch
 from model.qwen_mac import QwenMAC
-
 
 def run_memory_demo(device='mps'):
     print("\nInitializing QwenMAC...")
