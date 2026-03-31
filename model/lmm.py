@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class LMM(nn.Module):
-    def __init__(self, dim=512, ttt_lr=0.001, momentum=0.9, weight_decay=0.01, surprise_threshold=0.1):
+    def __init__(self, dim=1536, ttt_lr=0.001, momentum=0.9, weight_decay=0.01, surprise_threshold=0.1):
         super().__init__()
         self.dim = dim
         self.ttt_lr = ttt_lr
@@ -11,14 +11,15 @@ class LMM(nn.Module):
         self.weight_decay = weight_decay
         self.surprise_threshold = surprise_threshold
 
+        # qwen-mac branch
         self.net = nn.Sequential(
-            nn.Linear(dim, 1024),
+            nn.Linear(1536, 2048),
             nn.ReLU(),
-            nn.Linear(1024, 1024),
+            nn.Linear(2048, 2048),
             nn.ReLU(),
-            nn.Linear(1024, 1024),
+            nn.Linear(2048, 2048),
             nn.ReLU(),
-            nn.Linear(1024, dim)
+            nn.Linear(2048, 1536)
         )
 
         self.momentum_buffer = None
