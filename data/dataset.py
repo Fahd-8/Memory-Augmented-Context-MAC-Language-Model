@@ -4,10 +4,10 @@ from transformers import GPT2Tokenizer
 def get_tokenizer():
     return GPT2Tokenizer.from_pretrained("gpt2")
 
-def get_dataset(split="train[:1000]"):
+def get_dataset(split="train[:10000]"):
     return load_dataset("roneneldan/TinyStories", split=split)
 
-def prepare_data(dataset, tokenizer, max_len=50, num_stories=100):
+def prepare_data(dataset, tokenizer, max_len=256, num_stories=5000):
     sequences = []
 
     for i in range(min(num_stories, len(dataset))):

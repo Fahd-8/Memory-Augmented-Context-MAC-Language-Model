@@ -3,8 +3,8 @@ import torch
 import torch.nn as nn
 from model.embeddings import get_embedding
 
-def train(mac, sequences, tokenizer, epochs=50, lr=0.0003, device='mps', save_dir='checkpoints'):
-    embed = get_embedding(tokenizer.vocab_size).to(device)
+def train(mac, sequences, tokenizer, epochs=20, lr=0.0001, device='cuda', save_dir='checkpoints'):
+    embed = get_embedding(tokenizer.vocab_size, embed_dim=768).to(device)
     mac = mac.to(device)
 
     non_lmm_params = [
@@ -18,7 +18,7 @@ def train(mac, sequences, tokenizer, epochs=50, lr=0.0003, device='mps', save_di
     )
 
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode='min', factor=0.5, patience=5
+        optimizer, mode='min', factor=0.5, patience=3
     )
 
     criterion = nn.CrossEntropyLoss()
@@ -58,6 +58,8 @@ def train(mac, sequences, tokenizer, epochs=50, lr=0.0003, device='mps', save_di
 
         if avg_loss < best_loss:
             best_loss = avg_loss
+
+            # save locally
             os.makedirs(save_dir, exist_ok=True)
             torch.save({
                 'epoch': epoch,
@@ -68,6 +70,20 @@ def train(mac, sequences, tokenizer, epochs=50, lr=0.0003, device='mps', save_di
             }, f'{save_dir}/mac_best.pt')
             print(f"  ✓ Best model saved (loss={best_loss:.4f})")
 
+            # save to Google Drive if mounted
+            drive_dir = '/content/drive/MyDrive/MAC_checkpoints'
+            if os.path.exists('/content/drive/MyDrive'):
+                os.makedirs(drive_dir, exist_ok=True)
+                torch.save({
+                    'epoch': epoch,
+                    'mac_state_dict': mac.state_dict(),
+                    'embed_state_dict': embed.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
+                    'loss': best_loss,
+                }, f'{drive_dir}/mac_best.pt')
+                print(f"  ✓ Also saved to Google Drive")
+
+    # save final model
     torch.save({
         'epoch': epochs,
         'mac_state_dict': mac.state_dict(),
@@ -75,6 +91,16 @@ def train(mac, sequences, tokenizer, epochs=50, lr=0.0003, device='mps', save_di
         'optimizer_state_dict': optimizer.state_dict(),
         'loss': avg_loss,
     }, f'{save_dir}/mac_final.pt')
+
+    # save final to Google Drive if mounted
+    if os.path.exists('/content/drive/MyDrive'):
+        torch.save({
+            'epoch': epochs,
+            'mac_state_dict': mac.state_dict(),
+            'embed_state_dict': embed.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            'loss': avg_loss,
+        }, f'{drive_dir}/mac_final.pt')
 
     print(f"\nTraining complete! Best loss: {best_loss:.4f}")
     print(f"Models saved to {save_dir}/")

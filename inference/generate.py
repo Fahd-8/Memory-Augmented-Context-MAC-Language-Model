@@ -1,13 +1,17 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import torch
 import torch.nn.functional as F
 from transformers import GPT2Tokenizer
 from model.mac_layer import DeepMAC
 from model.embeddings import get_embedding
 
-def load_model(checkpoint_path='checkpoints/mac_best.pt', device='mps'):
+def load_model(checkpoint_path='checkpoints/mac_best.pt', device='cuda'):
     tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-    mac = DeepMAC(num_layers=3, dim=512, vocab_size=tokenizer.vocab_size)
-    embed = get_embedding(tokenizer.vocab_size)
+    mac = DeepMAC(num_layers=6, dim=768, vocab_size=tokenizer.vocab_size)
+    embed = get_embedding(tokenizer.vocab_size, embed_dim=768)
     checkpoint = torch.load(checkpoint_path, map_location=device)
     mac.load_state_dict(checkpoint['mac_state_dict'])
     embed.load_state_dict(checkpoint['embed_state_dict'])
@@ -16,9 +20,9 @@ def load_model(checkpoint_path='checkpoints/mac_best.pt', device='mps'):
     print(f"Model loaded from {checkpoint_path}")
     return mac, embed, tokenizer
 
-def generate_text(prompt, mac, embed, tokenizer, device='mps', max_new_tokens=50, temperature=0.9, top_p=0.9, repetition_penalty=1.3, do_ttt=True):
+def generate_text(prompt, mac, embed, tokenizer, device='cuda', max_new_tokens=100, temperature=0.8, top_p=0.9, repetition_penalty=1.3, do_ttt=True):
     mac.eval()
-    mac.reset_ttt()    # fresh TTT state for new prompt
+    mac.reset_ttt()
     mac.reset_memory()
 
     token_ids = tokenizer.encode(prompt)
@@ -50,7 +54,7 @@ def generate_text(prompt, mac, embed, tokenizer, device='mps', max_new_tokens=50
 
     return tokenizer.decode(generated)
 
-def run_tests(mac, embed, tokenizer, device='mps', do_ttt=True):
+def run_tests(mac, embed, tokenizer, device='cuda', do_ttt=True):
     test_prompts = [
         "Once upon a time",
         "The little girl",
@@ -64,7 +68,7 @@ def run_tests(mac, embed, tokenizer, device='mps', do_ttt=True):
     for prompt in test_prompts:
         generated = generate_text(
             prompt, mac, embed, tokenizer, device,
-            max_new_tokens=50,
+            max_new_tokens=100,
             temperature=0.8,
             top_p=0.85,
             repetition_penalty=1.8,
@@ -75,7 +79,13 @@ def run_tests(mac, embed, tokenizer, device='mps', do_ttt=True):
         print()
 
 if __name__ == "__main__":
-    device = 'mps' if torch.backends.mps.is_available() else 'cpu'
+    if torch.cuda.is_available():
+        device = 'cuda'
+    elif torch.backends.mps.is_available():
+        device = 'mps'
+    else:
+        device = 'cpu'
+
     mac, embed, tokenizer = load_model(device=device)
 
     print("=== TTT ON ===")

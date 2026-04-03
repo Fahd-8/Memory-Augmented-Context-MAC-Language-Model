@@ -20,10 +20,10 @@ def main():
     print(f"Prepared {len(sequences)} sequences")
 
     # Model
-    mac = DeepMAC(num_layers=3, dim=512, vocab_size=tokenizer.vocab_size)
+    mac = DeepMAC(num_layers=6, dim=768, vocab_size=tokenizer.vocab_size)
 
     # Train
-    mac, embed = train(mac, sequences, tokenizer, epochs=50, device=str(device))
+    mac, embed = train(mac, sequences, tokenizer, epochs=20, device=str(device))
 
     # Test
     run_tests(mac, embed, tokenizer, device=str(device))

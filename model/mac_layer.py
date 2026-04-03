@@ -4,10 +4,11 @@ from model.lmm import LMM
 from model.attention import Attention
 
 class MAC_Layer(nn.Module):
-    def __init__(self, dim=512, vocab_size=None):
+    def __init__(self, dim=768, vocab_size=None):
         super().__init__()
         self.lmm = LMM(dim)
         self.attention = Attention(dim)
+        self.norm = nn.LayerNorm(dim)
         self.output_proj = nn.Linear(dim, vocab_size) if vocab_size else None
 
         # learnable memory position — gives memory token a unique identity
@@ -28,6 +29,9 @@ class MAC_Layer(nn.Module):
         # slice back only the token positions, discard memory position
         hidden = output[:len(tokens)]
 
+        # layer norm for stability
+        hidden = self.norm(hidden)
+
         if self.output_proj:
             return self.output_proj(hidden), weights
         return hidden, weights
@@ -42,7 +46,7 @@ class MAC_Layer(nn.Module):
 
 
 class DeepMAC(nn.Module):
-    def __init__(self, num_layers=3, dim=512, vocab_size=50257):
+    def __init__(self, num_layers=6, dim=768, vocab_size=50257):
         super().__init__()
         self.mac_layers = nn.ModuleList([
             MAC_Layer(dim, vocab_size=None) for _ in range(num_layers - 1)

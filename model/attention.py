@@ -2,13 +2,13 @@ import torch
 import torch.nn as nn
 
 class Attention(nn.Module):
-    def __init__(self, dim=512, num_heads=8):
+    def __init__(self, dim=768, num_heads=12):
         super().__init__()
         assert dim % num_heads == 0, "dim must be divisible by num_heads"
 
         self.dim = dim
         self.num_heads = num_heads
-        self.head_dim = dim // num_heads  # 512 / 8 = 64 per head
+        self.head_dim = dim // num_heads  # 768 / 12 = 64 per head
 
         self.query = nn.Linear(dim, dim)
         self.key = nn.Linear(dim, dim)
