@@ -1,6 +1,7 @@
 import os
 import torch
 import torch.nn as nn
+from torch.cuda.amp import autocast, GradScaler
 from model.embeddings import get_embedding
 
 def train(mac, sequences, tokenizer, epochs=20, lr=0.0001, device='cuda', save_dir='checkpoints'):
@@ -22,32 +23,34 @@ def train(mac, sequences, tokenizer, epochs=20, lr=0.0001, device='cuda', save_d
     )
 
     criterion = nn.CrossEntropyLoss()
+    scaler = GradScaler()
 
     print(f"\nTraining MAC on {len(sequences)} sequences for {epochs} epochs...\n")
 
     best_loss = float('inf')
 
     for epoch in range(epochs):
-        # full reset at start of each epoch
         mac.reset_ttt()
         total_loss = 0
 
         for token_ids in sequences:
-            # light reset between sequences — keeps TTT optimizer state
             mac.reset_memory()
 
             seq_vecs = embed(torch.tensor(token_ids).to(device))
-            logits, _ = mac(seq_vecs, do_ttt=True)
 
-            targets = torch.tensor(token_ids[1:]).to(device)
-            loss = criterion(logits[:-1], targets)
+            with autocast():
+                logits, _ = mac(seq_vecs, do_ttt=True)
+                targets = torch.tensor(token_ids[1:]).to(device)
+                loss = criterion(logits[:-1], targets)
 
             optimizer.zero_grad()
-            loss.backward()
+            scaler.scale(loss).backward()
+            scaler.unscale_(optimizer)
             torch.nn.utils.clip_grad_norm_(
                 non_lmm_params + list(embed.parameters()), 1.0
             )
-            optimizer.step()
+            scaler.step(optimizer)
+            scaler.update()
 
             total_loss += loss.item()
 
@@ -59,7 +62,6 @@ def train(mac, sequences, tokenizer, epochs=20, lr=0.0001, device='cuda', save_d
         if avg_loss < best_loss:
             best_loss = avg_loss
 
-            # save locally
             os.makedirs(save_dir, exist_ok=True)
             torch.save({
                 'epoch': epoch,
@@ -70,7 +72,6 @@ def train(mac, sequences, tokenizer, epochs=20, lr=0.0001, device='cuda', save_d
             }, f'{save_dir}/mac_best.pt')
             print(f"  ✓ Best model saved (loss={best_loss:.4f})")
 
-            # save to Google Drive if mounted
             drive_dir = '/content/drive/MyDrive/MAC_checkpoints'
             if os.path.exists('/content/drive/MyDrive'):
                 os.makedirs(drive_dir, exist_ok=True)
@@ -83,7 +84,6 @@ def train(mac, sequences, tokenizer, epochs=20, lr=0.0001, device='cuda', save_d
                 }, f'{drive_dir}/mac_best.pt')
                 print(f"  ✓ Also saved to Google Drive")
 
-    # save final model
     torch.save({
         'epoch': epochs,
         'mac_state_dict': mac.state_dict(),
@@ -92,7 +92,6 @@ def train(mac, sequences, tokenizer, epochs=20, lr=0.0001, device='cuda', save_d
         'loss': avg_loss,
     }, f'{save_dir}/mac_final.pt')
 
-    # save final to Google Drive if mounted
     if os.path.exists('/content/drive/MyDrive'):
         torch.save({
             'epoch': epochs,

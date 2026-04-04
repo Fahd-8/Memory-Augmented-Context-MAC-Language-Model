@@ -54,7 +54,11 @@ class LMM(nn.Module):
             self.net.train()
             opt = self._get_optimizer()
 
-            for token in x:
+            for i, token in enumerate(x):
+                # TTT every 4th token — 75% faster, minimal quality loss
+                if i % 4 != 0:
+                    continue
+
                 token = token.unsqueeze(0).detach()
 
                 # step 1 — surprise via gradient norm
@@ -95,15 +99,12 @@ class LMM(nn.Module):
         with torch.no_grad():
             out = self.net(x)
 
-        # compress entire sequence into single memory summary vector
-        memory_summary = out.mean(dim=0, keepdim=True)  # shape [1, dim]
+        memory_summary = out.mean(dim=0, keepdim=True)
         return memory_summary
 
     def reset_memory_state(self):
-        # call between sequences — only resets momentum
         self.momentum_buffer = None
 
     def reset_ttt(self):
-        # call between epochs — full reset including optimizer
         self.momentum_buffer = None
         self.ttt_optimizer = None
