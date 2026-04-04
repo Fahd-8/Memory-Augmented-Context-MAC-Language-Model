@@ -45,7 +45,7 @@ export default function ChatPanel({ messages, onSend, onReset, loading }: Props)
           <div style={{
             fontFamily: 'IBM Plex Mono',
             fontSize: 10,
-            color: 'var(--text-3)',
+            color: 'var(--text-2)',
             letterSpacing: '0.1em',
             marginBottom: 4
           }}>MAC CHAT</div>
@@ -68,7 +68,7 @@ export default function ChatPanel({ messages, onSend, onReset, loading }: Props)
               <div style={{
                 fontFamily: 'IBM Plex Mono',
                 fontSize: 11,
-                color: 'var(--text-3)',
+                color: 'var(--text-2)',
                 lineHeight: 2
               }}>
                 <div>› tell the model your name</div>

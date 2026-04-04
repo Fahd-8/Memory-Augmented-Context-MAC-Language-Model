@@ -40,7 +40,7 @@ export default function MessageBubble({ message }: Props) {
           <div style={{
             fontFamily: 'IBM Plex Mono',
             fontSize: 10,
-            color: 'var(--text-3)',
+            color: 'var(--text-2)',
             marginBottom: 4,
             letterSpacing: '0.05em'
           }}>MAC_OUTPUT</div>
@@ -48,7 +48,7 @@ export default function MessageBubble({ message }: Props) {
         <p style={{
           fontFamily: isUser ? 'IBM Plex Sans' : 'IBM Plex Mono',
           fontSize: isUser ? 14 : 13,
-          color: isUser ? 'var(--text)' : 'var(--text-2)',
+          color: isUser ? 'var(--text)' : 'var(--text)',
           lineHeight: 1.7,
           whiteSpace: 'pre-wrap'
         }}>{message.content}</p>
