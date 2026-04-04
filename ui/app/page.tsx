@@ -86,19 +86,19 @@ export default function Home() {
 
       {/* top bar */}
       <div style={{
-        borderBottom: '1px solid var(--border)',
-        padding: '12px 24px',
+        borderBottom: '6px solid var(--border)',
+        padding: '18px 28px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        background: 'var(--bg-1)'
+        background: 'var(--bg-2)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <div style={{
             fontFamily: 'IBM Plex Mono',
-            fontSize: 12,
+            fontSize: 20,
             color: 'var(--text)',
-            letterSpacing: '0.05em'
+            letterSpacing: '0.19em'
           }}>MAC</div>
           <div style={{
             width: 1,
@@ -107,7 +107,7 @@ export default function Home() {
           }}/>
           <div style={{
             fontFamily: 'IBM Plex Mono',
-            fontSize: 10,
+            fontSize: 14,
             color: 'var(--text-3)',
             letterSpacing: '0.06em'
           }}>MEMORY-AUGMENTED CONTEXT · TITANS ARCHITECTURE</div>
@@ -127,7 +127,7 @@ export default function Home() {
             color: 'var(--text-3)',
             letterSpacing: '0.04em'
           }}>
-            {modelLoaded ? `MODEL_LOADED · ${device.toUpperCase()}` : 'MODEL_OFFLINE'}
+            {modelLoaded ? `MODEL_LOADED · ${device.toUpperCase()}` : 'MODEL OFFLINE'}
           </span>
         </div>
       </div>
@@ -141,7 +141,7 @@ export default function Home() {
         {/* chat — left */}
         <div style={{
           flex: 1,
-          borderRight: '1px solid var(--border)',
+          borderRight: '6px solid var(--border)',
           padding: 24,
           display: 'flex',
           flexDirection: 'column'

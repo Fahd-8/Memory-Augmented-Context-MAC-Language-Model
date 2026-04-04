@@ -44,7 +44,7 @@ export default function ChatPanel({ messages, onSend, onReset, loading }: Props)
         <div>
           <div style={{
             fontFamily: 'IBM Plex Mono',
-            fontSize: 10,
+            fontSize: 12,
             color: 'var(--text-2)',
             letterSpacing: '0.1em',
             marginBottom: 4
@@ -71,10 +71,10 @@ export default function ChatPanel({ messages, onSend, onReset, loading }: Props)
                 color: 'var(--text-2)',
                 lineHeight: 2
               }}>
-                <div>› tell the model your name</div>
-                <div>› tell it where you're from</div>
-                <div>› tell it what you love</div>
-                <div style={{ marginTop: 16 }}>then prove it remembers</div>
+                <div>› Tell the model your name</div>
+                <div>› Tell it where you're from</div>
+                <div>› Tell it what you love</div>
+                <div style={{ marginTop: 16 }}>Then prove it remembers</div>
               </div>
             </div>
           </div>
@@ -122,7 +122,7 @@ export default function ChatPanel({ messages, onSend, onReset, loading }: Props)
       <div style={{
         display: 'flex',
         gap: 8,
-        borderTop: '1px solid var(--border)',
+        borderTop: '3px solid var(--border)',
         paddingTop: 16
       }}>
         <div style={{
@@ -130,7 +130,7 @@ export default function ChatPanel({ messages, onSend, onReset, loading }: Props)
           display: 'flex',
           alignItems: 'center',
           background: 'var(--bg-2)',
-          border: '1px solid var(--border)',
+          border: '3px solid var(--border)',
           borderRadius: 6,
           padding: '0 12px',
           gap: 8
@@ -145,7 +145,7 @@ export default function ChatPanel({ messages, onSend, onReset, loading }: Props)
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="input message..."
+            placeholder="Input message..."
             rows={1}
             style={{
               flex: 1,
@@ -157,7 +157,7 @@ export default function ChatPanel({ messages, onSend, onReset, loading }: Props)
               fontSize: 13,
               resize: 'none',
               padding: '10px 0',
-              lineHeight: 1.5
+              lineHeight: 2.3
             }}
           />
         </div>
@@ -168,7 +168,7 @@ export default function ChatPanel({ messages, onSend, onReset, loading }: Props)
             width: 40,
             height: 40,
             background: input.trim() && !loading ? 'var(--bg-3)' : 'transparent',
-            border: '1px solid var(--border)',
+            border: '2px solid var(--border)',
             borderRadius: 6,
             color: input.trim() && !loading ? 'var(--text)' : 'var(--text-3)',
             cursor: loading || !input.trim() ? 'not-allowed' : 'pointer',

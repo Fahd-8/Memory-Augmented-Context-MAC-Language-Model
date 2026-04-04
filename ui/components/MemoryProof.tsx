@@ -12,8 +12,8 @@ export default function MemoryProof({ result, loading, onProve }: Props) {
       <div style={{ marginBottom: 20 }}>
         <div style={{
           fontFamily: 'IBM Plex Mono',
-          fontSize: 10,
-          color: 'var(--text-3)',
+          fontSize: 12,
+          color: 'var(--text-2)',
           letterSpacing: '0.1em',
           marginBottom: 6
         }}>MEMORY PROOF</div>
@@ -62,7 +62,7 @@ export default function MemoryProof({ result, loading, onProve }: Props) {
                 fontSize: 10,
                 color: 'var(--green)',
                 letterSpacing: '0.08em'
-              }}>TTT=ON · LMM_ACTIVE</span>
+              }}>TTT=ON · LMM ACTIVE</span>
             </div>
             <p style={{
               fontFamily: 'IBM Plex Mono',
@@ -86,7 +86,7 @@ export default function MemoryProof({ result, loading, onProve }: Props) {
                 fontSize: 10,
                 color: 'var(--red)',
                 letterSpacing: '0.08em'
-              }}>TTT=OFF · NO_MEMORY</span>
+              }}>TTT=OFF · NO MEMORY</span>
             </div>
             <p style={{
               fontFamily: 'IBM Plex Mono',
