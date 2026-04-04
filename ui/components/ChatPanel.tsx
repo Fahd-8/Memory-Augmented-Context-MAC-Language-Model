@@ -48,7 +48,7 @@ export default function ChatPanel({ messages, onSend, onReset, loading }: Props)
             color: 'var(--text-3)',
             letterSpacing: '0.1em',
             marginBottom: 4
-          }}>MAC_CHAT</div>
+          }}>MAC CHAT</div>
           <p style={{ color: 'var(--text-3)', fontSize: 12 }}>
             LMM accumulates memory across messages
           </p>

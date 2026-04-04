@@ -16,7 +16,7 @@ export default function MemoryProof({ result, loading, onProve }: Props) {
           color: 'var(--text-3)',
           letterSpacing: '0.1em',
           marginBottom: 6
-        }}>MEMORY_PROOF</div>
+        }}>MEMORY PROOF</div>
         <p style={{ color: 'var(--text-3)', fontSize: 12, lineHeight: 1.6 }}>
           Same question. TTT on vs off. If the LMM is working, only one will remember.
         </p>
@@ -44,7 +44,7 @@ export default function MemoryProof({ result, loading, onProve }: Props) {
           gap: 8
         }}
       >
-        {loading ? '■ RUNNING_TEST...' : '→ RUN_MEMORY_TEST'}
+        {loading ? '■ RUNNING TEST...' : '→ RUN MEMORY TEST'}
       </button>
 
       {result && (
