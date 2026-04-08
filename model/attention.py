@@ -24,7 +24,7 @@ class Attention(nn.Module):
         k = self.key(x)
         v = self.value(x)
 
-        # split into heads — reshape to [num_heads, seq_len, head_dim]
+        # split into heads 
         q = q.view(seq_len, self.num_heads, self.head_dim).transpose(0, 1)
         k = k.view(seq_len, self.num_heads, self.head_dim).transpose(0, 1)
         v = v.view(seq_len, self.num_heads, self.head_dim).transpose(0, 1)
@@ -39,7 +39,7 @@ class Attention(nn.Module):
         attn_weights = torch.softmax(scores, dim=-1)
 
         # weighted sum per head
-        out = torch.matmul(attn_weights, v)  # [num_heads, seq_len, head_dim]
+        out = torch.matmul(attn_weights, v)  
 
         # concat all heads back together
         out = out.transpose(0, 1).contiguous().view(seq_len, self.dim)
