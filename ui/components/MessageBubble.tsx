@@ -15,7 +15,7 @@ export default function MessageBubble({ message }: Props) {
             width: 20,
             height: 20,
             background: 'var(--bg-3)',
-            border: '1px solid var(--border-light)',
+            border: '2px solid var(--border-light)',
             borderRadius: 4,
             display: 'flex',
             alignItems: 'center',

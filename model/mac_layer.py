@@ -14,6 +14,7 @@ class MAC_Layer(nn.Module):
         # learnable memory position — gives memory token a unique identity
         self.memory_pos = nn.Parameter(torch.zeros(1, dim))
 
+
     def forward(self, tokens, do_ttt=False):
         # memory_summary is always shape [1, dim] regardless of sequence length
         memory_summary = self.lmm(tokens, do_ttt=do_ttt)
